@@ -2,6 +2,7 @@
 using Cmas.BusinessLayers.Contracts.Entities;
 using Cmas.Infrastructure.Domain.Commands;
 using Cmas.Infrastructure.Domain.Queries;
+using Cmas.Infrastructure.Security;
 using Nancy;
 using Nancy.ModelBinding;
 
@@ -15,6 +16,8 @@ namespace Cmas.Services.Contracts
 
         public ContractsModule(ICommandBuilder commandBuilder, IQueryBuilder queryBuilder) : base("/contracts")
         {
+            this.RequiresAuthentication();
+
             _commandBuilder = commandBuilder;
             _queryBuilder = queryBuilder;
             _contractBusinessLayer = new ContractBusinessLayer(_commandBuilder, _queryBuilder);
