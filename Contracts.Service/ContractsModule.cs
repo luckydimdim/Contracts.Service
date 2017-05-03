@@ -1,60 +1,96 @@
-﻿using Cmas.BusinessLayers.Contracts;
+﻿using System;
 using Cmas.BusinessLayers.Contracts.Entities;
-using Cmas.Infrastructure.Domain.Commands;
-using Cmas.Infrastructure.Domain.Queries;
 using Cmas.Infrastructure.Security;
 using Nancy;
 using Nancy.ModelBinding;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using Cmas.Infrastructure.ErrorHandler;
+using Cmas.Services.Contracts.Dtos.Requests;
+using Nancy.Validation;
 
 namespace Cmas.Services.Contracts
 {
     public class ContractsModule : NancyModule
     {
-        private readonly ICommandBuilder _commandBuilder;
-        private readonly IQueryBuilder _queryBuilder;
-        private readonly ContractBusinessLayer _contractBusinessLayer;
+        private readonly ContractsService _contractsService;
 
-        public ContractsModule(ICommandBuilder commandBuilder, IQueryBuilder queryBuilder) : base("/contracts")
+        public ContractsModule(IServiceProvider serviceProvider) : base("/contracts")
         {
             this.RequiresAuthentication();
+            
+            _contractsService = new ContractsService(serviceProvider);
 
-            _commandBuilder = commandBuilder;
-            _queryBuilder = queryBuilder;
-            _contractBusinessLayer = new ContractBusinessLayer(_commandBuilder, _queryBuilder);
+            /// <summary>
+            /// /contracts- получить договоры
+            /// </summary>
+            Get<IEnumerable<Contract>>("/", GetContractsHandlerAsync);
 
+            /// <summary>
+            /// /contracts/{id} - получить договор по ID
+            /// </summary>
+            Get<Contract>("/{id}", GetContractHandlerAsync);
 
-            Get("/", _ =>
-            {
-                return _contractBusinessLayer.GetContracts();
-            });
+            /// <summary>
+            /// Создать договор
+            /// </summary>
+            Post<string>("/", CreateContractHandlerAsync);
 
+            /// <summary>
+            /// Обновить договор
+            /// </summary>
+            Put<string>("/{id}", UpdateContractHandlerAsync);
 
-            Get("/{id}", async args => await _contractBusinessLayer.GetContract(args.id));
-
-
-            Post("/", async (args, ct) =>
-            {
-                var form = this.Bind<Contract>();
-
-                string result = await _contractBusinessLayer.CreateContract(form);
-
-                return result.ToString();
-            });
-
-            Put("/", async (args, ct) =>
-            {
-                var form = this.Bind<Contract>();
-
-                string result = await _contractBusinessLayer.UpdateContract(form.Id, form);
-
-                return result.ToString();
-            });
-
-            Delete("/{id}", async args =>
-            {
-                return await _contractBusinessLayer.DeleteContract(args.id);
-            });
+            /// <summary>
+            /// Удалить
+            /// </summary>
+            Delete<string>("/{id}", DeleteContractHandlerAsync);
         }
+
+        #region Обработчики
+
+        private async Task<IEnumerable<Contract>> GetContractsHandlerAsync(dynamic args,  CancellationToken ct)
+        {
+            return await _contractsService.GetContractsAsync();
+        }
+
+        private async Task<Contract> GetContractHandlerAsync(dynamic args, CancellationToken ct)
+        {
+            return await _contractsService.GetContractAsync(args.id);
+        }
+
+        private async Task<string> CreateContractHandlerAsync(dynamic args, CancellationToken ct)
+        {
+            this.RequiresRoles(new[] { Role.Customer });
+            
+            return  await _contractsService.CreateContractAsync();
+        }
+
+        private async Task<string> UpdateContractHandlerAsync(dynamic args, CancellationToken ct)
+        {
+            this.RequiresRoles(new[] { Role.Customer });
+
+            var request = this.Bind<UpdateContractRequest>();
+
+            var validationResult = this.Validate(request);
+
+            if (!validationResult.IsValid)
+            {
+                throw new ValidationErrorException(validationResult.FormattedErrors);
+            }
+
+            return await _contractsService.UpdateContractAsync(args.Id, request);
+        }
+
+        private async Task<string> DeleteContractHandlerAsync(dynamic args, CancellationToken ct)
+        {
+            this.RequiresRoles(new[] { Role.Customer });
+
+            return await _contractsService.DeleteContractAsync(args.id);
+        }
+
+        #endregion
 
     }
 }
