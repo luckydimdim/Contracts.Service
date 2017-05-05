@@ -1,4 +1,6 @@
-﻿namespace Cmas.Services.Contracts.Dtos.Requests
+﻿using System;
+
+namespace Cmas.Services.Contracts.Dtos.Requests
 {
     public class UpdateContractRequest
     {
@@ -6,9 +8,9 @@
 
         public string Number;
 
-        public string StartDate;
+        public DateTime? StartDate;
 
-        public string FinishDate;
+        public DateTime? FinishDate;
 
         public string ContractorName;
 
