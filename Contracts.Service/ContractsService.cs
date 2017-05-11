@@ -11,6 +11,7 @@ using AutoMapper;
 using Cmas.BusinessLayers.Requests;
 using Cmas.Infrastructure.ErrorHandler;
 using Microsoft.Extensions.Logging;
+using Nancy;
 
 namespace Cmas.Services.Contracts
 {
@@ -21,16 +22,15 @@ namespace Cmas.Services.Contracts
         private readonly IMapper _autoMapper;
         private ILogger _logger;
 
-        public ContractsService(IServiceProvider serviceProvider)
+        public ContractsService(IServiceProvider serviceProvider, NancyContext ctx)
         {
-            var _commandBuilder = (ICommandBuilder)serviceProvider.GetService(typeof(ICommandBuilder));
-            var _queryBuilder = (IQueryBuilder)serviceProvider.GetService(typeof(IQueryBuilder));
+           
             var _loggerFactory = (ILoggerFactory)serviceProvider.GetService(typeof(ILoggerFactory));
 
             _autoMapper = (IMapper)serviceProvider.GetService(typeof(IMapper));
 
-            _contractsBusinessLayer = new ContractsBusinessLayer(_commandBuilder, _queryBuilder);
-            _requestsBusinessLayer = new RequestsBusinessLayer(_commandBuilder, _queryBuilder);
+            _contractsBusinessLayer = new ContractsBusinessLayer(serviceProvider, ctx.CurrentUser);
+            _requestsBusinessLayer = new RequestsBusinessLayer(serviceProvider, ctx.CurrentUser);
 
             _logger = _loggerFactory.CreateLogger<ContractsService>();
         }

@@ -14,13 +14,27 @@ namespace Cmas.Services.Contracts
 {
     public class ContractsModule : NancyModule
     {
-        private readonly ContractsService _contractsService;
+        private IServiceProvider _serviceProvider;
+
+        private ContractsService contractsService;
+
+        private ContractsService _contractsService
+        {
+            get
+            {
+                if (contractsService == null)
+                    contractsService = new ContractsService(_serviceProvider, Context);
+
+                return contractsService;
+            }
+        }
+
 
         public ContractsModule(IServiceProvider serviceProvider) : base("/contracts")
         {
             this.RequiresAuthentication();
-            
-            _contractsService = new ContractsService(serviceProvider);
+            _serviceProvider = serviceProvider;
+
 
             /// <summary>
             /// /contracts- получить договоры
