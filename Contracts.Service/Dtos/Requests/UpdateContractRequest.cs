@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Cmas.Services.Contracts.Dtos.Requests
 {
@@ -27,6 +28,8 @@ namespace Cmas.Services.Contracts.Dtos.Requests
         public string ConstructionObjectTitleCode;
 
         public string Description;
+
+        public IList<AmountRequest> Amounts;
 
         /// <summary>
         /// Системное имя шаблона для НЗ и TS
