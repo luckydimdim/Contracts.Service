@@ -30,10 +30,5 @@ namespace Cmas.Services.Contracts.Dtos.Requests
         public string Description;
 
         public IList<AmountRequest> Amounts;
-
-        /// <summary>
-        /// Системное имя шаблона для НЗ и TS
-        /// </summary>
-        public string TemplateSysName;
     }
 }
