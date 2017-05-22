@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Cmas.Infrastructure.ErrorHandler;
 using Cmas.Services.Contracts.Dtos.Requests;
+using Cmas.Services.Contracts.Dtos.Responses;
 using Nancy.Validation;
 
 namespace Cmas.Services.Contracts
@@ -39,7 +40,7 @@ namespace Cmas.Services.Contracts
             /// <summary>
             /// /contracts- получить договоры
             /// </summary>
-            Get<IEnumerable<Contract>>("/", GetContractsHandlerAsync);
+            Get<IEnumerable<SimpleContractResponse>>("/", GetContractsHandlerAsync);
 
             /// <summary>
             /// /contracts/{id} - получить договор по ID
@@ -64,7 +65,7 @@ namespace Cmas.Services.Contracts
 
         #region Обработчики
 
-        private async Task<IEnumerable<Contract>> GetContractsHandlerAsync(dynamic args,  CancellationToken ct)
+        private async Task<IEnumerable<SimpleContractResponse>> GetContractsHandlerAsync(dynamic args,  CancellationToken ct)
         {
             return await _contractsService.GetContractsAsync();
         }

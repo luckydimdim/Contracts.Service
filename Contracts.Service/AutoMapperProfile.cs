@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Cmas.Services.Contracts.Dtos.Requests;
 using Cmas.BusinessLayers.Contracts.Entities;
+using Cmas.Services.Contracts.Dtos.Responses;
 
 namespace Cmas.Services.Contracts
 {
@@ -10,6 +11,8 @@ namespace Cmas.Services.Contracts
         {
             CreateMap<UpdateContractRequest, Contract>();
             CreateMap<AmountRequest, Amount>();
+            CreateMap<Contract, SimpleContractResponse>();
+            CreateMap<Amount, AmountResponse>();
         }
     }
 }

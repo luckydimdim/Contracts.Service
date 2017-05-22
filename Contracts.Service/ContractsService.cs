@@ -4,12 +4,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using Cmas.BusinessLayers.Contracts;
 using Cmas.BusinessLayers.Contracts.Entities;
-using Cmas.Infrastructure.Domain.Commands;
-using Cmas.Infrastructure.Domain.Queries;
 using Cmas.Services.Contracts.Dtos.Requests;
 using AutoMapper;
 using Cmas.BusinessLayers.Requests;
 using Cmas.Infrastructure.ErrorHandler;
+using Cmas.Services.Contracts.Dtos.Responses;
 using Microsoft.Extensions.Logging;
 using Nancy;
 
@@ -35,40 +34,79 @@ namespace Cmas.Services.Contracts
             _logger = _loggerFactory.CreateLogger<ContractsService>();
         }
 
-        public async Task<IEnumerable<Contract>> GetContractsAsync()
+        /// <summary>
+        /// Получить все договоры
+        /// </summary>
+        public async Task<IEnumerable<SimpleContractResponse>> GetContractsAsync()
         {
-            return await _contractsBusinessLayer.GetContracts();
+            var result = new List<SimpleContractResponse>();
+
+            // FIXME: В случае, если подрядчика более одного, продумать показ договоров только для него
+
+            var contracts = await _contractsBusinessLayer.GetContracts();
+
+            foreach (var contract in contracts)
+            {
+                result.Add(_autoMapper.Map<SimpleContractResponse>(contract));
+            }
+
+            return result; 
         }
 
+        /// <summary>
+        /// Получить договор
+        /// </summary>
         public async Task<Contract> GetContractAsync(string contractID)
         {
-            return await _contractsBusinessLayer.GetContract(contractID);
+            var contract = await _contractsBusinessLayer.GetContract(contractID);
+
+            if (contract == null)
+            {
+                throw new NotFoundErrorException();
+            }
+
+            return contract;
         }
 
+        /// <summary>
+        /// Создать договор
+        /// </summary>
         public async Task<string> CreateContractAsync()
         {
             return await _contractsBusinessLayer.CreateContract();
         }
 
+        /// <summary>
+        /// Обновить договор
+        /// </summary>
         public async Task<string> UpdateContractAsync(string contractId, UpdateContractRequest request)
         {
+            // FIXME: Продумать что делать если по договору есть наряд заказы
             Contract currentContract = await _contractsBusinessLayer.GetContract(contractId);
+
+            if (currentContract == null)
+            {
+                throw new NotFoundErrorException();
+            }
 
             Contract newContract = _autoMapper.Map<UpdateContractRequest, Contract>(request, currentContract);
 
             return await _contractsBusinessLayer.UpdateContract(contractId, newContract);
         }
 
+        /// <summary>
+        /// Удалить договор
+        /// </summary>
         public async Task<string> DeleteContractAsync(string contractId)
         {
-
             var requests = await _requestsBusinessLayer.GetRequestsByContractId(contractId);
 
             if (requests.Any())
             {
-                _logger.LogWarning("Can not delete a contract that has a requests");
                 throw new GeneralServiceErrorException("Can not delete a contract that has a requests");
             }
+
+            // FIXME: Продумать что делать если по договору есть наряд заказы
 
             return await _contractsBusinessLayer.DeleteContract(contractId);
         }
