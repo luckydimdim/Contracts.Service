@@ -33,7 +33,7 @@ namespace Cmas.Services.Contracts
 
         public ContractsModule(IServiceProvider serviceProvider) : base("/contracts")
         {
-            this.RequiresAuthentication();
+            this.RequiresRoles(new[] { Role.Contractor, Role.Customer });
             _serviceProvider = serviceProvider;
 
 
