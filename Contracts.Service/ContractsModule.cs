@@ -79,7 +79,16 @@ namespace Cmas.Services.Contracts
         {
             this.RequiresRoles(new[] { Role.Customer });
             
-            return  await _contractsService.CreateContractAsync();
+            var request = this.Bind<CreateContractRequest>();
+
+            var validationResult = this.Validate(request);
+
+            if (!validationResult.IsValid)
+            {
+                throw new ValidationErrorException(validationResult.FormattedErrors);
+            }
+
+            return  await _contractsService.CreateContractAsync(request);
         }
 
         private async Task<string> UpdateContractHandlerAsync(dynamic args, CancellationToken ct)

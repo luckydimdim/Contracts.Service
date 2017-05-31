@@ -71,9 +71,11 @@ namespace Cmas.Services.Contracts
         /// <summary>
         /// Создать договор
         /// </summary>
-        public async Task<string> CreateContractAsync()
+        public async Task<string> CreateContractAsync(CreateContractRequest request)
         {
-            return await _contractsBusinessLayer.CreateContract();
+            var contract = _autoMapper.Map<Contract>(request);
+
+            return await _contractsBusinessLayer.CreateContract(contract);
         }
 
         /// <summary>

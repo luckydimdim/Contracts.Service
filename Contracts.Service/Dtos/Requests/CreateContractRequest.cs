@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Cmas.Services.Contracts.Dtos.Requests
 {
-    public class UpdateContractRequest
+    public class CreateContractRequest
     {
         public string Name;
 
@@ -16,7 +16,7 @@ namespace Cmas.Services.Contracts.Dtos.Requests
         public string ContractorName;
 
         public string Currency;
-       
+        
         public bool VatIncluded;
 
         public string ConstructionObjectName;

@@ -10,6 +10,7 @@ namespace Cmas.Services.Contracts
         public AutoMapperProfile()
         {
             CreateMap<UpdateContractRequest, Contract>();
+            CreateMap<CreateContractRequest, Contract>();
             CreateMap<AmountRequest, Amount>();
             CreateMap<Contract, SimpleContractResponse>();
             CreateMap<Amount, AmountResponse>();
