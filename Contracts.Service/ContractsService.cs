@@ -11,6 +11,7 @@ using Cmas.Infrastructure.ErrorHandler;
 using Cmas.Services.Contracts.Dtos.Responses;
 using Microsoft.Extensions.Logging;
 using Nancy;
+using Cmas.BusinessLayers.CallOffOrders;
 
 namespace Cmas.Services.Contracts
 {
@@ -18,6 +19,7 @@ namespace Cmas.Services.Contracts
     {
         private readonly ContractsBusinessLayer _contractsBusinessLayer;
         private readonly RequestsBusinessLayer _requestsBusinessLayer;
+        private readonly CallOffOrdersBusinessLayer _callOffOrdersBusinessLayer;
         private readonly IMapper _autoMapper;
         private ILogger _logger;
 
@@ -30,6 +32,7 @@ namespace Cmas.Services.Contracts
 
             _contractsBusinessLayer = new ContractsBusinessLayer(serviceProvider, ctx.CurrentUser);
             _requestsBusinessLayer = new RequestsBusinessLayer(serviceProvider, ctx.CurrentUser);
+            _callOffOrdersBusinessLayer = new CallOffOrdersBusinessLayer(serviceProvider, ctx.CurrentUser);
 
             _logger = _loggerFactory.CreateLogger<ContractsService>();
         }
@@ -56,16 +59,23 @@ namespace Cmas.Services.Contracts
         /// <summary>
         /// Получить договор
         /// </summary>
-        public async Task<Contract> GetContractAsync(string contractID)
+        public async Task<DetailedContractResponse> GetContractAsync(string contractID)
         {
             var contract = await _contractsBusinessLayer.GetContract(contractID);
-
+            
             if (contract == null)
             {
                 throw new NotFoundErrorException();
             }
 
-            return contract;
+            var result = _autoMapper.Map<DetailedContractResponse>(contract);
+
+            // FIXME: сделать вьюху чтобы не вытягивать все НЗ
+            var callOffs = await _callOffOrdersBusinessLayer.GetCallOffOrders(contractID);
+
+            result.readOnly = callOffs.Count() > 0;
+
+            return result;
         }
 
         /// <summary>

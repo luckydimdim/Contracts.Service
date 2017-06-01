@@ -33,7 +33,7 @@ namespace Cmas.Services.Contracts
 
         public ContractsModule(IServiceProvider serviceProvider) : base("/contracts")
         {
-            this.RequiresRoles(new[] { Role.Contractor, Role.Customer });
+            this.RequiresAnyRole(new[] { Role.Contractor, Role.Customer });
             _serviceProvider = serviceProvider;
 
 
@@ -45,7 +45,7 @@ namespace Cmas.Services.Contracts
             /// <summary>
             /// /contracts/{id} - получить договор по ID
             /// </summary>
-            Get<Contract>("/{id}", GetContractHandlerAsync);
+            Get<DetailedContractResponse>("/{id}", GetContractHandlerAsync);
 
             /// <summary>
             /// Создать договор
@@ -70,14 +70,14 @@ namespace Cmas.Services.Contracts
             return await _contractsService.GetContractsAsync();
         }
 
-        private async Task<Contract> GetContractHandlerAsync(dynamic args, CancellationToken ct)
+        private async Task<DetailedContractResponse> GetContractHandlerAsync(dynamic args, CancellationToken ct)
         {
             return await _contractsService.GetContractAsync(args.id);
         }
 
         private async Task<string> CreateContractHandlerAsync(dynamic args, CancellationToken ct)
         {
-            this.RequiresRoles(new[] { Role.Customer });
+            this.RequiresAnyRole(new[] { Role.Customer });
             
             var request = this.Bind<CreateContractRequest>();
 
@@ -93,7 +93,7 @@ namespace Cmas.Services.Contracts
 
         private async Task<string> UpdateContractHandlerAsync(dynamic args, CancellationToken ct)
         {
-            this.RequiresRoles(new[] { Role.Customer });
+            this.RequiresAnyRole(new[] { Role.Customer });
 
             var request = this.Bind<UpdateContractRequest>();
 
@@ -109,7 +109,7 @@ namespace Cmas.Services.Contracts
 
         private async Task<string> DeleteContractHandlerAsync(dynamic args, CancellationToken ct)
         {
-            this.RequiresRoles(new[] { Role.Customer });
+            this.RequiresAnyRole(new[] { Role.Customer });
 
             return await _contractsService.DeleteContractAsync(args.id);
         }

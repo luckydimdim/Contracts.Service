@@ -13,6 +13,7 @@ namespace Cmas.Services.Contracts
             CreateMap<CreateContractRequest, Contract>();
             CreateMap<AmountRequest, Amount>();
             CreateMap<Contract, SimpleContractResponse>();
+            CreateMap<Contract, DetailedContractResponse>();
             CreateMap<Amount, AmountResponse>();
         }
     }
