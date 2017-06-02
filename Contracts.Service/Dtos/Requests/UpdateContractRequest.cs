@@ -9,9 +9,9 @@ namespace Cmas.Services.Contracts.Dtos.Requests
 
         public string Number;
 
-        public DateTime? StartDate;
+        public DateTime StartDate;
 
-        public DateTime? FinishDate;
+        public DateTime FinishDate;
 
         public string ContractorName;
 
