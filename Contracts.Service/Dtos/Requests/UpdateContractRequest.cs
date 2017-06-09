@@ -14,9 +14,7 @@ namespace Cmas.Services.Contracts.Dtos.Requests
         public DateTime FinishDate;
 
         public string ContractorName;
-
-        public string Currency;
-       
+        
         public bool VatIncluded;
 
         public string ConstructionObjectName;
