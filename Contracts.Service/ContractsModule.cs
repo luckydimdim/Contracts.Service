@@ -33,7 +33,8 @@ namespace Cmas.Services.Contracts
 
         public ContractsModule(IServiceProvider serviceProvider) : base("/contracts")
         {
-            this.RequiresAnyRole(new[] { Role.Contractor, Role.Customer });
+            //this.RequiresAnyRole(new[] { Role.Contractor, Role.Customer });
+            this.RequiresAuthentication();
             _serviceProvider = serviceProvider;
 
 
@@ -77,7 +78,7 @@ namespace Cmas.Services.Contracts
 
         private async Task<string> CreateContractHandlerAsync(dynamic args, CancellationToken ct)
         {
-            this.RequiresAnyRole(new[] { Role.Customer });
+            this.RequiresAnyRole(new[] { Role.Customer, Role.Administrator, });
             
             var request = this.Bind<CreateContractRequest>();
 
@@ -93,7 +94,7 @@ namespace Cmas.Services.Contracts
 
         private async Task<string> UpdateContractHandlerAsync(dynamic args, CancellationToken ct)
         {
-            this.RequiresAnyRole(new[] { Role.Customer });
+            this.RequiresAnyRole(new[] { Role.Customer, Role.Administrator, });
 
             var request = this.Bind<UpdateContractRequest>();
 
@@ -109,7 +110,7 @@ namespace Cmas.Services.Contracts
 
         private async Task<string> DeleteContractHandlerAsync(dynamic args, CancellationToken ct)
         {
-            this.RequiresAnyRole(new[] { Role.Customer });
+            this.RequiresAnyRole(new[] { Role.Customer, Role.Administrator, });
 
             return await _contractsService.DeleteContractAsync(args.id);
         }
