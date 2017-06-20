@@ -81,5 +81,10 @@ namespace Cmas.Services.Contracts.Dtos.Responses
         /// Только на чтение
         /// </summary>
         public bool readOnly;
+
+        /// <summary>
+        /// Возможность удаления
+        /// </summary>
+        public bool canDelete;
     }
 }

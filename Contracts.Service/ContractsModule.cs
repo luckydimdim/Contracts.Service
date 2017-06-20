@@ -110,8 +110,8 @@ namespace Cmas.Services.Contracts
 
         private async Task<string> DeleteContractHandlerAsync(dynamic args, CancellationToken ct)
         {
-            this.RequiresAnyRole(new[] { Role.Customer, Role.Administrator, });
-
+            this.RequiresAnyRole(new[] { Role.Customer, Role.Administrator });
+            
             return await _contractsService.DeleteContractAsync(args.id);
         }
 
